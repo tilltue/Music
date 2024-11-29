@@ -12,7 +12,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["Sources/**"],
             dependencies: [
-                
+                .tca
             ]
         ),
         .target(
@@ -23,7 +23,8 @@ let project = Project(
             infoPlist: .default,
             sources: ["Tests/**"],
             dependencies: [
-                .target(name: "Repository")
+                .target(name: "Repository"),
+                .tca
             ]
         )
     ]
