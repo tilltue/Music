@@ -22,7 +22,8 @@ let project = Project(
             sources: ["App/Sources/**"],
             resources: ["App/Resources/**"],
             dependencies: [
-                .tca
+                .tca,
+                .module(name: "Repository")
             ]
         ),
         .target(
