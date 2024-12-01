@@ -22,7 +22,7 @@ struct AlbumListView: View {
                             ForEach(viewStore.state, id: \.persistentID) { album in
                                 NavigationLink(destination: AlbumDetailView(album: album)) {
                                     AlbumGridItem(album: album)
-                                        .frame(height: geometry.size.width / 2 - 15)
+                                        .frame(height: geometry.size.width / 2 + 20)
                                 }
                             }
                         }
@@ -33,18 +33,9 @@ struct AlbumListView: View {
                         await store.send(.load).finish()
                     }
                 }
-                .navigationTitle("Albums")
+                .navigationBarItems(leading: Text("Albums").foregroundColor(.white))
+                .toolbarBackground(Color.black, for: .navigationBar)
             }
         }
-    }
-}
-
-struct AlbumGridItem: View {
-    let album: MPMediaItem
-    
-    var body: some View {
-        Rectangle()
-            .fill(Color.blue)
-            .overlay(Text(album.albumTitle ?? "").foregroundColor(.white))
     }
 }
