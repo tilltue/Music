@@ -14,6 +14,10 @@ let project = Project(
             bundleId: "com.tilltue.Music",
             infoPlist: .extendingDefault(
                 with: [
+                    "UILaunchScreen": [
+                        "Image Name": "LaunchImage",
+                        "Background color" : "LaunchScreenColor"
+                    ],
                     "CFBundleShortVersionString": "1.0",
                     "CFBundleVersion": "1",
                     "NSAppleMusicUsageDescription": "이 앱으로 Apple Music을 통해 당신의 음악을 다시 즐겨보세요!"

@@ -1,10 +1,16 @@
 import SwiftUI
+import ComposableArchitecture
+
 
 @main
 struct MusicApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AlbumListView(
+                store: Store(initialState: AlbumList.State()) {
+                    AlbumList()._printChanges()
+                }
+            )
         }
     }
 }
