@@ -15,19 +15,15 @@ struct AlbumGridItem: View {
         GeometryReader { geometry in
             VStack {
                 let width = geometry.size.width - 20
-                if let artwork = album.artwork {
-                    Image(uiImage: artwork.image(at: .init(width: width, height: width)) ?? UIImage())
-                        .resizable()
-                        .applyThumbnail(width: width)
-                } else {
-                    DefaultAlbumImage()
-                        .applyThumbnail(width: width)
-                }
+                let albumImage = album.artwork?.image(at: .init(width: width, height: width))
+                AlbumImage(width: width, albumImage: albumImage)
+                
                 Text(album.albumTitle ?? "")
                     .padding(.horizontal, 10)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(.white)
+                
                 Text(album.artist ?? "")
                     .padding(.horizontal, 10)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -38,17 +34,3 @@ struct AlbumGridItem: View {
         }
     }
 }
-
-private struct DefaultAlbumImage: View {
-    var body: some View {
-        Rectangle()
-            .fill(Color.gray.opacity(0.3))
-            .overlay(
-                Image(systemName: "music.note")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40, height: 40)
-                    .foregroundColor(.gray)
-            )
-    }
-} 

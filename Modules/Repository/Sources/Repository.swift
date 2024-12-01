@@ -28,9 +28,8 @@ extension MusicRepository: DependencyKey {
         fetchSongs: {
             let songsQuery = MPMediaQuery.songs()
             let predicate = MPMediaPropertyPredicate(
-                value: $0.persistentID,
-                forProperty: MPMediaItemPropertyAlbumPersistentID,
-                comparisonType: .equalTo
+                value: $0.albumPersistentID,
+                forProperty: MPMediaItemPropertyAlbumPersistentID
             )
             songsQuery.addFilterPredicate(predicate)
             return songsQuery.items ?? []

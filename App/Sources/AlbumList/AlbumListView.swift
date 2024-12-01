@@ -20,7 +20,12 @@ struct AlbumListView: View {
                         let columns = [GridItem(.flexible()), GridItem(.flexible())]
                         LazyVGrid(columns: columns) {
                             ForEach(viewStore.state, id: \.persistentID) { album in
-                                NavigationLink(destination: AlbumDetailView(album: album)) {
+                                let destination = AlbumDetailView(
+                                    store: Store(initialState: AlbumDetail.State(album: album)) {
+                                        AlbumDetail()._printChanges()
+                                    }
+                                )
+                                NavigationLink(destination:destination) {
                                     AlbumGridItem(album: album)
                                         .frame(height: geometry.size.width / 2 + 20)
                                 }
