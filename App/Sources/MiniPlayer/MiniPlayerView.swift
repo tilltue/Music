@@ -16,7 +16,8 @@ struct MiniPlayerView: View {
         WithViewStore(store, observe: { $0 }) { viewStore  in
             ZStack(alignment: .leading) {
                 HStack {
-                    AlbumImage(width: 30, cornerRadius: 3, albumImage: nil)
+                    let albumImage = viewStore.currentSong?.artwork?.image(at: .init(width: 30, height: 30))
+                    AlbumImage(width: 30, cornerRadius: 3, albumImage: albumImage)
                         .padding(.leading, 5)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(viewStore.currentSong?.title ?? "")

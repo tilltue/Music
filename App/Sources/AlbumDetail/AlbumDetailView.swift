@@ -18,8 +18,14 @@ struct AlbumDetailView: View {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 10) {
                         let width = geometry.size.width * (7/10)
-                        AlbumDetailHeader(width: width, album: viewStore.album)
-                            .padding(.horizontal, 20)
+                        VStack(spacing: 2) {
+                            AlbumDetailHeader(width: width, album: viewStore.album)
+                                .padding(.horizontal, 20)
+                            MusicButtonsView(
+                                playTap: { store.send(.play(nil)) },
+                                shuffleTap: { store.send(.shufflePlay) }
+                            )
+                        }
                         Divider()
                         let songs = viewStore.songs
                         ForEach(Array(zip(songs.indices, songs)), id: \.1.persistentID) { index, song in
@@ -80,26 +86,28 @@ private struct AlbumDetailHeader: View {
                 .padding(.horizontal, 20)
                 .font(.system(size: 12))
                 .foregroundColor(.gray)
-            MusicButtonsView()
         }
         .frame(maxWidth: .infinity)
     }
 }
 
 private struct MusicButtonsView: View {
+    var playTap: () -> Void
+    var shuffleTap: () -> Void
+    
     var body: some View {
         HStack(spacing: 15) {
             MusicButton(
                 title: "재생",
                 iconName: "play.fill",
                 backgroundColors: [Color.blue, Color.purple]
-            )
+            ).onTapGesture{ _ in playTap() }
             
             MusicButton(
                 title: "임의 재생",
                 iconName: "shuffle",
                 backgroundColors: [Color.green, Color.teal]
-            )
+            ).onTapGesture{ _ in shuffleTap() }
         }
         .padding()
     }

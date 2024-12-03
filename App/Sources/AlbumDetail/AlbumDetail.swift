@@ -21,7 +21,8 @@ struct AlbumDetail {
     enum Action {
         case load
         case setSongs([MPMediaItem])
-        case play(MPMediaItem)
+        case play(MPMediaItem?)
+        case shufflePlay
     }
     
     @Dependency(\.musicRepository) var musicRepository
@@ -37,12 +38,22 @@ struct AlbumDetail {
                 state.songs = songs
                 return .none
             case .play(let song):
-                let playList = state.songs.rotated(element: song)
-                musicPlayer.setPlayList(playList)
-                musicPlayer.play()
+                if let song {
+                    play(state.songs.rotated(element: song))
+                } else {
+                    play(state.songs)
+                }
+                return .none
+            case .shufflePlay:
+                play(state.songs.shuffled())
                 return .none
             }
         }
+    }
+    
+    private func play(_ playList: [MPMediaItem]) {
+        musicPlayer.setPlayList(playList)
+        musicPlayer.play()
     }
 }
 
