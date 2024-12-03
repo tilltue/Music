@@ -22,7 +22,7 @@ struct AlbumListView: View {
                             ForEach(viewStore.state, id: \.persistentID) { album in
                                 let destination = AlbumDetailView(
                                     store: Store(initialState: AlbumDetail.State(album: album)) {
-                                        AlbumDetail()._printChanges()
+                                        AlbumDetail()
                                     }
                                 )
                                 NavigationLink(destination:destination) {

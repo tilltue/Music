@@ -11,18 +11,21 @@ import MediaPlayer
 import Combine
 
 enum MusicPlayerStatus {
-    case playing
-    case paused
-    case stopped
+    case playing(MPMediaItem?)
+    case paused(MPMediaItem?)
+    case stopped(MPMediaItem?)
     case songChanged(MPMediaItem)
     case progress(MPMediaItem, Double)
 }
 
 struct MusicPlayer {
+    private static let playList = CurrentValueSubject<[MPMediaItem], Never>([])
+    
     var musicPlaybackStatus: () -> AnyPublisher<MusicPlayerStatus, Never>?
     var play: () -> Void
     var pause: () -> Void
     var stop: () -> Void
+    var setPlayList: ([MPMediaItem]) -> Void
 }
 
 extension MusicPlayer: DependencyKey {
@@ -32,7 +35,11 @@ extension MusicPlayer: DependencyKey {
             musicPlaybackStatus: { [weak player] in player?.statusPublisher },
             play: { [weak player] in player?.play() },
             pause: { [weak player] in player?.pause() },
-            stop: { [weak player] in player?.stop() }
+            stop: { [weak player] in player?.stop() },
+            setPlayList: { [weak player] in
+                player?.setQueue(with: MPMediaItemCollection(items: $0))
+                Self.playList.send($0)
+            }
         )
     }
 }
@@ -45,8 +52,9 @@ private extension MPMusicPlayerController {
             for: Notification.Name.MPMusicPlayerControllerPlaybackStateDidChange,
             object: nil
         )
-        .map { _ in musicPlayer.playbackState }
-        .compactMap(MusicPlayerStatus.init)
+        .compactMap { [weak musicPlayer] _ in
+            MusicPlayerStatus(musicPlayer?.playbackState, song: musicPlayer?.nowPlayingItem)
+        }
         .eraseToAnyPublisher()
         
         let songChanged: AnyPublisher<MusicPlayerStatus, Never>
@@ -54,13 +62,14 @@ private extension MPMusicPlayerController {
             for: Notification.Name.MPMusicPlayerControllerNowPlayingItemDidChange,
             object: nil
         )
-        .compactMap { _ in musicPlayer.nowPlayingItem }
+        .compactMap { [weak musicPlayer] _ in musicPlayer?.nowPlayingItem }
         .map { .songChanged($0) }
         .eraseToAnyPublisher()
-     
+        
         let progress: AnyPublisher<MusicPlayerStatus, Never>
         progress = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
-            .compactMap { _ in musicPlayer.nowPlayingItem }
+            .compactMap { [weak musicPlayer] _ in musicPlayer?.nowPlayingItem }
+            .filter { [weak musicPlayer] _ in musicPlayer?.playbackState == .playing }
             .map { item in
                 let progress = Double(musicPlayer.currentPlaybackTime / item.playbackDuration)
                 return .progress(item, progress)
@@ -83,14 +92,15 @@ extension DependencyValues {
 }
 
 private extension MusicPlayerStatus {
-    init?(_ status: MPMusicPlaybackState) {
+    init?(_ status: MPMusicPlaybackState?, song: MPMediaItem?) {
+        guard let status = status else { return nil }
         switch status {
         case .playing:
-            self = .playing
+            self = .playing(song)
         case .paused:
-            self = .paused
+            self = .paused(song)
         case .stopped, .interrupted:
-            self = .stopped
+            self = .stopped(song)
         default:
             return nil
         }

@@ -1,14 +1,14 @@
 import SwiftUI
 import ComposableArchitecture
-
+import MediaPlayer
 
 @main
 struct MusicApp: App {
     var body: some Scene {
         WindowGroup {
-            AlbumListView(
-                store: Store(initialState: AlbumList.State()) {
-                    AlbumList()._printChanges()
+            AppMainView(
+                store: Store(initialState: AppMain.State()) {
+                    AppMain()
                 }
             )
         }

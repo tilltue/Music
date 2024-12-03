@@ -30,8 +30,13 @@ struct AlbumDetailView: View {
                                 Text(song.title ?? "")
                                     .foregroundColor(.white)
                             }
-                            .frame(height: 30)
-                            .padding(.horizontal, 20)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .frame(height: 40)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                store.send(.play(song))
+                            }
+                            
                             if index < songs.count - 1 {
                                 Divider().padding(.leading, 40)
                             }

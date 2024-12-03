@@ -19,16 +19,15 @@ struct MiniPlayerView: View {
                     AlbumImage(width: 30, cornerRadius: 3, albumImage: nil)
                         .padding(.leading, 5)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(viewStore.state.song?.title ?? "")
+                        Text(viewStore.currentSong?.title ?? "")
                             .font(.system(size: 12))
                             .foregroundColor(.white)
-                        Text(viewStore.state.song?.artist ?? "")
+                        Text(viewStore.currentSong?.artist ?? "")
                             .font(.system(size: 12))
                             .foregroundColor(.white.opacity(0.7))
                     }
                     Spacer()
                     Button(action: {
-                        print("\(viewStore.isPlaying)")
                         store.send(viewStore.isPlaying ? .pause : .play)
                     }) {
                         Image(systemName: viewStore.isPlaying ? "pause.fill" : "play.fill")
@@ -49,6 +48,9 @@ struct MiniPlayerView: View {
             .frame(height: 50)
             .background(Color(hex: "#2c7972"))
             .cornerRadius(5)
+            .task {
+                await store.send(.initial).finish()
+            }
         }
     }
 }
