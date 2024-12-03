@@ -9,16 +9,23 @@ import SwiftUI
 
 struct AlbumImage: View {
     let width: CGFloat
+    let cornerRadius: CGFloat
     let albumImage: UIImage?
+    
+    init(width: CGFloat, cornerRadius: CGFloat = 10, albumImage: UIImage?) {
+        self.width = width
+        self.cornerRadius = cornerRadius
+        self.albumImage = albumImage
+    }
     
     var body: some View {
         if let albumImage {
             Image(uiImage: albumImage)
                 .resizable()
-                .applyThumbnail(width: width)
+                .applyThumbnail(width: width, cornerRadius: cornerRadius)
         } else {
             EmptyAlbumImage()
-                .applyThumbnail(width: width)
+                .applyThumbnail(width: width, cornerRadius: cornerRadius)
         }
     }
 }
