@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct FullPlayerView: View {
+    var animation: Namespace.ID
+    
     var body: some View {
         ZStack {
             Color.black
@@ -26,15 +28,20 @@ struct FullPlayerView: View {
                     AlbumImage(width: 70, cornerRadius: 5, albumImage: nil)
                         .background(.black.opacity(0.5))
                         .clipShape(RoundedRectangle(cornerRadius: 5))
+                        .matchedGeometryEffect(id: "albumImage", in: animation)
+                    
                     VStack {
                         Text("Song Title")
                             .foregroundColor(.white)
                             .font(.system(size: 15, weight: .medium))
                             .frame(maxWidth: .infinity, alignment: .leading)
+                            .matchedGeometryEffect(id: "song", in: animation)
+                        
                         Text("Artist Name")
                             .foregroundColor(.gray)
                             .font(.system(size: 12))
                             .frame(maxWidth: .infinity, alignment: .leading)
+                            .matchedGeometryEffect(id: "artist", in: animation)
                     }
                     .padding(.leading, 5)
                     Spacer()
@@ -67,6 +74,7 @@ struct FullPlayerView: View {
             }
         }
         .background(.black)
+        .edgesIgnoringSafeArea(.all)
     }
     
     var progressView: some View {
@@ -195,6 +203,6 @@ private struct DraggableProgressView: View {
     }
 }
 
-#Preview {
-    FullPlayerView()
-}
+//#Preview {
+//    FullPlayerView()
+//}

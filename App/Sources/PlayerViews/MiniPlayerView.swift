@@ -11,6 +11,7 @@ import MediaPlayer
 
 struct MiniPlayerView: View {
     let store: StoreOf<MiniPlayer>
+    var animation: Namespace.ID
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore  in
@@ -19,13 +20,18 @@ struct MiniPlayerView: View {
                     let albumImage = viewStore.currentSong?.artwork?.image(at: .init(width: 30, height: 30))
                     AlbumImage(width: 30, cornerRadius: 3, albumImage: albumImage)
                         .padding(.leading, 5)
+                        .matchedGeometryEffect(id: "albumImage", in: animation)
+                    
                     VStack(alignment: .leading, spacing: 2) {
                         Text(viewStore.currentSong?.title ?? "")
                             .font(.system(size: 12))
                             .foregroundColor(.white)
+                            .matchedGeometryEffect(id: "title", in: animation)
+                        
                         Text(viewStore.currentSong?.artist ?? "")
                             .font(.system(size: 12))
                             .foregroundColor(.white.opacity(0.7))
+                            .matchedGeometryEffect(id: "artist", in: animation)
                     }
                     Spacer()
                     Button(action: {

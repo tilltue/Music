@@ -9,24 +9,38 @@ import SwiftUI
 import ComposableArchitecture
 
 struct AppMainView: View {
+    @State private var isExpanded = false
+    @Namespace private var animation
+    
     let store: StoreOf<AppMain>
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(spacing: 0) {
-                AlbumListView(
-                    store: Store(initialState: AlbumList.State()) {
-                        AlbumList()
+            ZStack(alignment: .bottom) {
+                VStack(spacing: 0) {
+                    AlbumListView(
+                        store: Store(initialState: AlbumList.State()) {
+                            AlbumList()
+                        }
+                    )
+                    MiniPlayerView(
+                        store: Store(initialState: MiniPlayer.State()) {
+                            MiniPlayer()
+                        },
+                        animation: animation
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .safeAreaPadding(.bottom, 10)
+                    .onTapGesture {
+                        withAnimation(.spring()) {
+                            isExpanded = true
+                        }
                     }
-                )
-                MiniPlayerView(
-                    store: Store(initialState: MiniPlayer.State()) {
-                        MiniPlayer()
-                    }
-                )
-                .safeAreaPadding(.bottom)
-                .frame(maxWidth: .infinity)
-                .frame(height: 50)
+                }
+                .sheet(isPresented: $isExpanded) {
+                    FullPlayerView(animation: animation)
+                }
             }
         }
     }
