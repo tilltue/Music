@@ -12,7 +12,6 @@ struct VolumeView: UIViewRepresentable {
     func makeUIView(context: Context) -> MPVolumeView {
         let volumeView = MPVolumeView(frame: .zero)
         volumeView.showsVolumeSlider = true
-        volumeView.showsRouteButton = false
         return volumeView
     }
     

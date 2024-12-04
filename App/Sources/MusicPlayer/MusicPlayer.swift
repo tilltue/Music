@@ -39,6 +39,7 @@ extension MusicPlayer: DependencyKey {
             },
             setPlayList: { [weak player] in
                 player?.setQueue(with: MPMediaItemCollection(items: $0))
+                player?.play()
             },
             setPlaybackProgress: { [weak player] progress in
                 guard let nowPlayingDuration = player?.nowPlayingItem?.playbackDuration else { return }

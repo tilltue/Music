@@ -21,8 +21,6 @@ struct AppMain {
     enum Action {
     }
     
-    @Dependency(\.musicRepository) var musicRepository
-    
     var body: some Reducer<State, Action> {
         Reduce { _, _ in
             return .none

@@ -40,28 +40,7 @@ struct FullPlayer {
         Reduce { state, action in
             switch action {
             case .initial:
-                return .run { send in
-                    guard let playerStatusStream = musicPlayer.musicPlaybackStatus() else { return }
-                    for try await playerStatus in playerStatusStream.values {
-                        switch playerStatus {
-                        case .playing(let song):
-                            await send(.updateIsPlaying(true))
-                            if let song {
-                                await send(.updateCurrentSong(song))
-                            }
-                        case .paused(let song), .stopped(let song):
-                            await send(.updateIsPlaying(false))
-                            if let song {
-                                await send(.updateCurrentSong(song))
-                            }
-                        case .songChanged(let song):
-                            await send(.updateCurrentSong(song))
-                        case .progress(let song, let progress):
-                            await send(.updateCurrentSong(song))
-                            await send(.updateProgress(progress))
-                        }
-                    }
-                }
+                return .run { await observePlaybackEvents($0) }
             case .playToggle:
                 musicPlayer.playToggle()
                 return .none
@@ -92,6 +71,30 @@ struct FullPlayer {
             case .updateIsPlaying(let isPlaying):
                 state.isPlaying = isPlaying
                 return .none
+            }
+        }
+    }
+    
+    private func observePlaybackEvents(_ send: Send<Action>) async {
+        guard let playerStatusStream = musicPlayer.musicPlaybackStatus() else { return }
+        
+        for try await playerStatus in playerStatusStream.values {
+            switch playerStatus {
+            case .playing(let song):
+                await send(.updateIsPlaying(true))
+                if let song {
+                    await send(.updateCurrentSong(song))
+                }
+            case .paused(let song), .stopped(let song):
+                await send(.updateIsPlaying(false))
+                if let song {
+                    await send(.updateCurrentSong(song))
+                }
+            case .songChanged(let song):
+                await send(.updateCurrentSong(song))
+            case .progress(let song, let progress):
+                await send(.updateCurrentSong(song))
+                await send(.updateProgress(progress))
             }
         }
     }

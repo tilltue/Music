@@ -53,7 +53,6 @@ struct AlbumDetail {
     
     private func play(_ playList: [MPMediaItem]) {
         musicPlayer.setPlayList(playList)
-        musicPlayer.playToggle()
     }
 }
 
