@@ -35,7 +35,7 @@ struct MiniPlayerView: View {
                     }
                     Spacer()
                     Button(action: {
-                        store.send(viewStore.isPlaying ? .pause : .play)
+                        store.send(.playToggle)
                     }) {
                         Image(systemName: viewStore.isPlaying ? "pause.fill" : "play.fill")
                             .resizable()

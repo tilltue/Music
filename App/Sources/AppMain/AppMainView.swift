@@ -39,9 +39,18 @@ struct AppMainView: View {
                     }
                 }
                 .sheet(isPresented: $isExpanded) {
-                    FullPlayerView(animation: animation)
+                    fullPlayerView
                 }
+            }.task {
+                await store.fullPlayerStore.send(.initial).finish()
             }
         }
+    }
+    
+    private var fullPlayerView: some View {
+        FullPlayerView(
+            store: store.fullPlayerStore,
+            animation: animation
+        )
     }
 }

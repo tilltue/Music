@@ -19,13 +19,14 @@ enum MusicPlayerStatus {
 }
 
 struct MusicPlayer {
-    private static let playList = CurrentValueSubject<[MPMediaItem], Never>([])
-    
     var musicPlaybackStatus: () -> AnyPublisher<MusicPlayerStatus, Never>?
-    var play: () -> Void
-    var pause: () -> Void
-    var stop: () -> Void
+    var playToggle: () -> Void
     var setPlayList: ([MPMediaItem]) -> Void
+    var setPlaybackProgress: (Double) -> Void
+    var setAllRepeat: (Bool) -> Void
+    var setShuffle: (Bool) -> Void
+    var seekBackword: () -> Void
+    var seekFoword: () -> Void
 }
 
 extension MusicPlayer: DependencyKey {
@@ -33,12 +34,27 @@ extension MusicPlayer: DependencyKey {
         let player = MPMusicPlayerController.systemMusicPlayer
         return MusicPlayer(
             musicPlaybackStatus: { [weak player] in player?.statusPublisher },
-            play: { [weak player] in player?.play() },
-            pause: { [weak player] in player?.pause() },
-            stop: { [weak player] in player?.stop() },
+            playToggle: { [weak player] in
+                player?.playbackState == .playing ? player?.pause() : player?.play()
+            },
             setPlayList: { [weak player] in
                 player?.setQueue(with: MPMediaItemCollection(items: $0))
-                Self.playList.send($0)
+            },
+            setPlaybackProgress: { [weak player] progress in
+                guard let nowPlayingDuration = player?.nowPlayingItem?.playbackDuration else { return }
+                player?.currentPlaybackTime = nowPlayingDuration * progress
+            },
+            setAllRepeat: { [weak player] allRepeat in
+                player?.repeatMode = allRepeat ? .all : .none
+            },
+            setShuffle: { [weak player] shuffle in
+                player?.shuffleMode = shuffle ? .songs : .off
+            },
+            seekBackword: { [weak player] in
+                player?.skipToPreviousItem()
+            },
+            seekFoword: { [weak player] in
+                player?.skipToNextItem()
             }
         )
     }
@@ -47,7 +63,7 @@ extension MusicPlayer: DependencyKey {
 private extension MPMusicPlayerController {
     var statusPublisher: AnyPublisher<MusicPlayerStatus, Never> {
         let musicPlayer = MPMusicPlayerController.systemMusicPlayer
-        let status: AnyPublisher<MusicPlayerStatus, Never>
+        var status: AnyPublisher<MusicPlayerStatus, Never>
         status = NotificationCenter.default.publisher(
             for: Notification.Name.MPMusicPlayerControllerPlaybackStateDidChange,
             object: nil
@@ -56,6 +72,14 @@ private extension MPMusicPlayerController {
             MusicPlayerStatus(musicPlayer?.playbackState, song: musicPlayer?.nowPlayingItem)
         }
         .eraseToAnyPublisher()
+        
+        if
+            let nowPlayingSong = musicPlayer.nowPlayingItem,
+            let playingStatus = MusicPlayerStatus(musicPlayer.playbackState, song: nowPlayingSong)
+        {
+            status = status.prepend(playingStatus)
+                .eraseToAnyPublisher()
+        }
         
         let songChanged: AnyPublisher<MusicPlayerStatus, Never>
         songChanged = NotificationCenter.default.publisher(
@@ -75,7 +99,7 @@ private extension MPMusicPlayerController {
                 return .progress(item, progress)
             }
             .eraseToAnyPublisher()
-        
+
         return status
             .merge(with: songChanged)
             .merge(with: progress)

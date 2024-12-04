@@ -13,6 +13,9 @@ import MediaPlayer
 struct AppMain {
     @ObservableState
     struct State: Equatable {
+        var fullPlayerStore = Store(initialState: FullPlayer.State()) {
+            FullPlayer()
+        }
     }
     
     enum Action {
