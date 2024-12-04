@@ -99,38 +99,35 @@ private struct MusicButtonsView: View {
         HStack(spacing: 15) {
             MusicButton(
                 title: "재생",
-                iconName: "play.fill",
-                backgroundColors: [Color.blue, Color.purple]
+                iconName: "play.fill"
             ).onTapGesture{ _ in playTap() }
             
             MusicButton(
                 title: "임의 재생",
-                iconName: "shuffle",
-                backgroundColors: [Color.green, Color.teal]
+                iconName: "shuffle"
             ).onTapGesture{ _ in shuffleTap() }
         }
         .padding()
     }
-}
-
-private struct MusicButton: View {
-    let title: String
-    let iconName: String
-    let backgroundColors: [Color]
     
-    var body: some View {
-        HStack {
-            Image(systemName: iconName)
-                .frame(width: 20, height: 20)
-                .foregroundColor(.red)
-            
-            Text(title)
-                .font(.headline)
-                .foregroundColor(.red)
+    struct MusicButton: View {
+        let title: String
+        let iconName: String
+        
+        var body: some View {
+            HStack {
+                Image(systemName: iconName)
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(.red)
+                
+                Text(title)
+                    .font(.headline)
+                    .foregroundColor(.red)
+            }
+            .frame(maxWidth: .infinity, minHeight: 50)
+            .padding(.horizontal, 20)
+            .background(Color.gray.opacity(0.2))
+            .cornerRadius(15)
         }
-        .frame(maxWidth: .infinity, minHeight: 50)
-        .padding(.horizontal, 20)
-        .background(Color.gray.opacity(0.2))
-        .cornerRadius(15)
     }
 }
