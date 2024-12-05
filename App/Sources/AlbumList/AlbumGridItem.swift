@@ -6,16 +6,16 @@
 //
 
 import SwiftUI
-import MediaPlayer
+import Repository
 
 struct AlbumGridItem: View {
-    let album: MPMediaItem
+    let album: MusicAlbum
     
     var body: some View {
         GeometryReader { geometry in
             VStack {
                 let width = geometry.size.width - 20
-                let albumImage = album.artwork?.image(at: .init(width: width, height: width))
+                let albumImage = album.getImages?(.init(width: width, height: width))
                 AlbumImage(width: width, albumImage: albumImage)
                 
                 Text(album.albumTitle ?? "")

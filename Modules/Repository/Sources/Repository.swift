@@ -12,8 +12,8 @@ import MediaPlayer
 public struct MusicRepository {
     public var authorizationStatus: () -> MPMediaLibraryAuthorizationStatus
     public var requestAuthorization: () async -> MPMediaLibraryAuthorizationStatus
-    public var fetchAlbums: () -> [MPMediaItem]
-    public var fetchSongs: (MPMediaItem) -> [MPMediaItem]
+    public var fetchAlbums: () -> [MusicAlbum]
+    public var fetchSongs: (UInt64) -> [MPMediaItem]
 }
 
 extension MusicRepository: DependencyKey {
@@ -22,13 +22,15 @@ extension MusicRepository: DependencyKey {
         requestAuthorization: { await MPMediaLibrary.requestAuthorization() },
         fetchAlbums: {
             let albumsQuery = MPMediaQuery.albums()
-            let items = albumsQuery.collections?.compactMap { $0.representativeItem }
-            return items ?? []
+            let albums = albumsQuery.collections?
+                .compactMap { $0.representativeItem }
+                .map(MusicAlbum.init(album:))
+            return albums ?? []
         },
         fetchSongs: {
             let songsQuery = MPMediaQuery.songs()
             let predicate = MPMediaPropertyPredicate(
-                value: $0.albumPersistentID,
+                value: $0,
                 forProperty: MPMediaItemPropertyAlbumPersistentID
             )
             songsQuery.addFilterPredicate(predicate)

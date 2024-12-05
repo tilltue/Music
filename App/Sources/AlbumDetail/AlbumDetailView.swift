@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import Repository
 import MediaPlayer
 
 struct AlbumDetailView: View {
@@ -63,11 +64,11 @@ struct AlbumDetailView: View {
 
 private struct AlbumDetailHeader: View {
     let width: CGFloat
-    let album: MPMediaItem
+    let album: MusicAlbum
     
     var body: some View {
         return VStack(spacing: 2) {
-            let albumImage = album.artwork?.image(at: .init(width: width, height: width))
+            let albumImage = album.getImages?(.init(width: width, height: width))
             AlbumImage(width: width, albumImage: albumImage)
                 .applyThumbnail(width: width)
                 .padding(.bottom, 10)
@@ -76,7 +77,7 @@ private struct AlbumDetailHeader: View {
                 .padding(.horizontal, 20)
                 .font(.system(size: 20, weight: .medium))
                 .foregroundColor(.white)
-            Text(album.albumArtist ?? "")
+            Text(album.artist ?? "")
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.horizontal, 20)
                 .font(.system(size: 20))

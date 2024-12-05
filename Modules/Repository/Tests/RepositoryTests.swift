@@ -37,7 +37,7 @@ struct MusicRepositoryTests {
             let status = await musicRepository.requestAuthorization()
             #expect(status == authStatus)
             #expect(musicRepository.fetchAlbums() == [])
-            #expect(musicRepository.fetchSongs(MPMediaItem()) == [])
+            #expect(musicRepository.fetchSongs(0) == [])
         }
     }
 }

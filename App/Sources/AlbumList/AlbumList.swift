@@ -7,19 +7,18 @@
 
 import Foundation
 import ComposableArchitecture
-import MediaPlayer
 import Repository
 
 @Reducer
 struct AlbumList {
     @ObservableState
     struct State: Equatable {
-        var albums: [MPMediaItem] = []
+        var albums: [MusicAlbum] = []
     }
     
     enum Action {
         case load
-        case setAlbums([MPMediaItem])
+        case setAlbums([MusicAlbum])
     }
     
     @Dependency(\.musicRepository) var musicRepository
@@ -41,11 +40,11 @@ struct AlbumList {
         case .notDetermined:
             return .run { send in
                 let status = await musicRepository.requestAuthorization()
-                status == .authorized ? await send(.setAlbums(musicRepository.fetchAlbums())) : ()//TODO: 권한별 조치
+                status == .authorized ? await loadAlbums(send) : ()//TODO: 권한별 조치
             }
         case .authorized:
             return .run { send in
-                await send(.setAlbums(musicRepository.fetchAlbums()))
+                await loadAlbums(send)
             }
         case .denied:
             return .none // TODO: 설정 이동
@@ -54,5 +53,9 @@ struct AlbumList {
         @unknown default:
             return .none
         }
+    }
+    
+    private func loadAlbums(_ send: Send<Action>) async {
+        await send(.setAlbums(musicRepository.fetchAlbums()))
     }
 }

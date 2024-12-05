@@ -14,7 +14,7 @@ import Repository
 struct AlbumDetail {
     @ObservableState
     struct State: Equatable {
-        var album: MPMediaItem
+        var album: MusicAlbum
         var songs: [MPMediaItem] = []
     }
     
@@ -32,7 +32,7 @@ struct AlbumDetail {
         Reduce { state, action in
             switch action {
             case .load:
-                let songs = musicRepository.fetchSongs(state.album)
+                let songs = musicRepository.fetchSongs(state.album.albumId)
                 return .send(.setSongs(songs))
             case .setSongs(let songs):
                 state.songs = songs
