@@ -8,14 +8,16 @@
 import SwiftUI
 import MediaPlayer
 
-struct VolumeView: UIViewRepresentable {
-    func makeUIView(context: Context) -> MPVolumeView {
+public struct VolumeView: UIViewRepresentable {
+    public init() {}
+    
+    public func makeUIView(context: Context) -> MPVolumeView {
         let volumeView = MPVolumeView(frame: .zero)
         volumeView.showsVolumeSlider = true
         return volumeView
     }
     
-    func updateUIView(_ uiView: MPVolumeView, context: Context) {
+    public func updateUIView(_ uiView: MPVolumeView, context: Context) {
         
     }
 }

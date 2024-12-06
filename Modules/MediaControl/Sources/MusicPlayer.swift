@@ -11,7 +11,7 @@ import Repository
 import MediaPlayer
 import Combine
 
-enum MusicPlayerStatus {
+public enum MusicPlayerStatus {
     case playing(MPMediaItem?)
     case paused(MPMediaItem?)
     case stopped(MPMediaItem?)
@@ -19,19 +19,19 @@ enum MusicPlayerStatus {
     case progress(MPMediaItem, Double)
 }
 
-struct MusicPlayer {
-    var musicPlaybackStatus: () -> AnyPublisher<MusicPlayerStatus, Never>?
-    var playToggle: () -> Void
-    var setPlayList: ([Song]) -> Void
-    var setPlaybackProgress: (Double) -> Void
-    var setAllRepeat: (Bool) -> Void
-    var setShuffle: (Bool) -> Void
-    var seekBackword: () -> Void
-    var seekFoword: () -> Void
+public struct MusicPlayer {
+    public var musicPlaybackStatus: () -> AnyPublisher<MusicPlayerStatus, Never>?
+    public var playToggle: () -> Void
+    public var setPlayList: ([Song]) -> Void
+    public var setPlaybackProgress: (Double) -> Void
+    public var setAllRepeat: (Bool) -> Void
+    public var setShuffle: (Bool) -> Void
+    public var seekBackword: () -> Void
+    public var seekFoword: () -> Void
 }
 
 extension MusicPlayer: DependencyKey {
-    static var liveValue: MusicPlayer {
+    public static var liveValue: MusicPlayer {
         let player = MPMusicPlayerController.systemMusicPlayer
         return MusicPlayer(
             musicPlaybackStatus: { [weak player] in player?.statusPublisher },
@@ -68,6 +68,13 @@ extension MusicPlayer: DependencyKey {
                 player?.skipToNextItem()
             }
         )
+    }
+}
+
+public extension DependencyValues {
+    var musicPlayer: MusicPlayer {
+        get { self[MusicPlayer.self] }
+        set { self[MusicPlayer.self] = newValue }
     }
 }
 
@@ -116,13 +123,6 @@ private extension MPMusicPlayerController {
             .merge(with: progress)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-    }
-}
-
-extension DependencyValues {
-    var musicPlayer: MusicPlayer {
-        get { self[MusicPlayer.self] }
-        set { self[MusicPlayer.self] = newValue }
     }
 }
 

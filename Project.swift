@@ -27,7 +27,8 @@ let project = Project(
             resources: ["App/Resources/**"],
             dependencies: [
                 .tca,
-                .module(name: "Repository")
+                .module(name: "Repository"),
+                .module(name: "MediaControl")
             ]
         ),
         .target(

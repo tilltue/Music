@@ -7,6 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
+import MediaControl
 import MediaPlayer
 import Combine
 

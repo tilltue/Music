@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import MediaControl
 import MediaPlayer
 
 struct FullPlayerView: View {
