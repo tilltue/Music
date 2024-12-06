@@ -8,7 +8,6 @@
 import SwiftUI
 import ComposableArchitecture
 import Repository
-import MediaPlayer
 
 struct AlbumDetailView: View {
     let store: StoreOf<AlbumDetail>
@@ -29,7 +28,7 @@ struct AlbumDetailView: View {
                         }
                         Divider()
                         let songs = viewStore.songs
-                        ForEach(Array(zip(songs.indices, songs)), id: \.1.persistentID) { index, song in
+                        ForEach(Array(zip(songs.indices, songs)), id: \.1.songId) { index, song in
                             HStack(spacing: 5) {
                                 Text("\(index + 1)")
                                     .foregroundColor(.gray)

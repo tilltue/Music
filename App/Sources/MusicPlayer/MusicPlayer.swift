@@ -7,6 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
+import Repository
 import MediaPlayer
 import Combine
 
@@ -21,7 +22,7 @@ enum MusicPlayerStatus {
 struct MusicPlayer {
     var musicPlaybackStatus: () -> AnyPublisher<MusicPlayerStatus, Never>?
     var playToggle: () -> Void
-    var setPlayList: ([MPMediaItem]) -> Void
+    var setPlayList: ([Song]) -> Void
     var setPlaybackProgress: (Double) -> Void
     var setAllRepeat: (Bool) -> Void
     var setShuffle: (Bool) -> Void
@@ -37,9 +38,18 @@ extension MusicPlayer: DependencyKey {
             playToggle: { [weak player] in
                 player?.playbackState == .playing ? player?.pause() : player?.play()
             },
-            setPlayList: { [weak player] in
-                player?.setQueue(with: MPMediaItemCollection(items: $0))
-                player?.play()
+            setPlayList: { [weak player] songs in
+                let query = MPMediaQuery.songs()
+                guard let items = query.items else { return }
+                let dict = Dictionary(uniqueKeysWithValues: items.map {
+                    ($0.persistentID, $0)
+                })
+                let songItems = songs.compactMap { dict[$0.songId] }
+                player?.setQueue(with:MPMediaItemCollection(items: songItems))
+                player?.prepareToPlay { [weak player] in
+                    guard $0 == nil else { return }
+                    player?.play()
+                }
             },
             setPlaybackProgress: { [weak player] progress in
                 guard let nowPlayingDuration = player?.nowPlayingItem?.playbackDuration else { return }

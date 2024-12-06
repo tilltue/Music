@@ -13,7 +13,7 @@ public struct MusicRepository {
     public var authorizationStatus: () -> MPMediaLibraryAuthorizationStatus
     public var requestAuthorization: () async -> MPMediaLibraryAuthorizationStatus
     public var fetchAlbums: () -> [MusicAlbum]
-    public var fetchSongs: (UInt64) -> [MPMediaItem]
+    public var fetchSongs: (UInt64) -> [Song]
 }
 
 extension MusicRepository: DependencyKey {
@@ -34,7 +34,8 @@ extension MusicRepository: DependencyKey {
                 forProperty: MPMediaItemPropertyAlbumPersistentID
             )
             songsQuery.addFilterPredicate(predicate)
-            return songsQuery.items ?? []
+            let songs = songsQuery.items?.map(Song.init(item:))
+            return songs ?? []
         }
     )
 }

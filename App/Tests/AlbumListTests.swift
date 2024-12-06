@@ -59,7 +59,6 @@ struct AlbumListTests {
     @Test("앨범 접근 권한이 있는 경우 앨범 로드")
     @MainActor
     func loadAlbums_alreadyAuthoirzed() async {
-        var spyCalledRequestAuthorization = false
         // Arrange
         let sut = TestStore(initialState: AlbumList.State()) {
             AlbumList()

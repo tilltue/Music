@@ -7,7 +7,6 @@
 
 import SwiftUI
 import ComposableArchitecture
-import MediaPlayer
 
 struct AlbumListView: View {
     let store: StoreOf<AlbumList>

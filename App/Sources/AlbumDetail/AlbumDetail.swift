@@ -7,7 +7,6 @@
 
 import Foundation
 import ComposableArchitecture
-import MediaPlayer
 import Repository
 
 @Reducer
@@ -15,13 +14,13 @@ struct AlbumDetail {
     @ObservableState
     struct State: Equatable {
         var album: MusicAlbum
-        var songs: [MPMediaItem] = []
+        var songs: [Song] = []
     }
     
     enum Action {
         case load
-        case setSongs([MPMediaItem])
-        case play(MPMediaItem?)
+        case setSongs([Song])
+        case play(Song?)
         case shufflePlay
     }
     
@@ -51,12 +50,12 @@ struct AlbumDetail {
         }
     }
     
-    private func play(_ playList: [MPMediaItem]) {
+    private func play(_ playList: [Song]) {
         musicPlayer.setPlayList(playList)
     }
 }
 
-extension Array where Element: Hashable {
+private extension Array where Element: Hashable {
     func rotated(element: Element) -> [Element] {
         guard let index = self.firstIndex(of: element) else {
             return self
